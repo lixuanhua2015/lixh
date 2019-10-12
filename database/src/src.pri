@@ -1,0 +1,1 @@
+include(databasemanager/databasemanager.pri)
