@@ -10,20 +10,6 @@ DatabaseManager::~DatabaseManager()
 
 }
 
-void DatabaseManager::connectDB()
-{
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("IoTGateway.db");
-
-    if (db.open()){
-        RTU_DEBUG << "open db sucess";
-    } else {
-        RTU_DEBUG << "open db fail";
-    }
-     RTU_DEBUG<<Q_FUNC_INFO<<__LINE__<<db.connectionName()<<db.databaseName();
-}
-
 void DatabaseManager::connectDB(QString dbName)
 {
     QSqlDatabase db;
@@ -33,14 +19,14 @@ void DatabaseManager::connectDB(QString dbName)
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE",dbName);
     }
+    RTU_DEBUG << db.databaseName();
     db.setDatabaseName("IoTGateway.db");
-
     if (db.open()){
         RTU_DEBUG << "open db sucess";
     } else {
         RTU_DEBUG << "open db fail";
     }
-    RTU_DEBUG<<Q_FUNC_INFO<<__LINE__<<db.connectionName()<<db.databaseName();
+    RTU_DEBUG<<db.connectionName()<<db.databaseName();
 }
 
 QSqlDatabase DatabaseManager::getDB(QString dbName)

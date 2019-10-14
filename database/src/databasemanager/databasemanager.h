@@ -15,6 +15,8 @@
 #include <QSqlQueryModel>
 #include <QSqlRecord>
 #include <QDebug>
+#include <QThread>
+#include <QDateTime>
 
 #define RTU_DEBUG qDebug()<<QThread::currentThreadId()<<QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")<<__FILE__<<":"<<__LINE__<<":"
 
@@ -30,7 +32,6 @@ public:
      * @param 数据库名
      */
     void connectDB(QString dbName);
-    void connectDB();
     /**
      * @brief 获取数据库
      * @param dbName
