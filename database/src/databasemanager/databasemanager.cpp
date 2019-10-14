@@ -19,8 +19,8 @@ void DatabaseManager::connectDB(QString dbName)
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE",dbName);
     }
-    RTU_DEBUG << db.databaseName();
-    db.setDatabaseName("IoTGateway.db");
+    RTU_DEBUG << db.connectionName();
+    db.setDatabaseName("mydatabase.db");
     if (db.open()){
         RTU_DEBUG << "open db sucess";
     } else {
@@ -37,12 +37,13 @@ QSqlDatabase DatabaseManager::getDB(QString dbName)
         db = QSqlDatabase::database();
     } else {
         if (QSqlDatabase::contains(dbName)){
+            RTU_DEBUG << "db contains dbName.";
             db = QSqlDatabase::database(dbName);
         } else {
             db = QSqlDatabase::addDatabase("QSQLITE",dbName);
         }
     }
-    RTU_DEBUG<<Q_FUNC_INFO<<__LINE__<<db.connectionName()<<db.databaseName()<<QSqlDatabase::contains(dbName)<<dbName;
+    RTU_DEBUG<<db.connectionName()<<db.databaseName()<<QSqlDatabase::contains(dbName)<<dbName;
     return db;
 }
 
@@ -50,7 +51,7 @@ QSqlDatabase DatabaseManager::getDB()
 {
     QSqlDatabase db;
     db = QSqlDatabase::database();
-    RTU_DEBUG<<Q_FUNC_INFO<<__LINE__<<db.connectionName()<<db.databaseName();
+    RTU_DEBUG<<db.connectionName()<<db.databaseName();
     return db;
 }
 
@@ -154,15 +155,15 @@ int DatabaseManager::getTableRowCount(QSqlDatabase db, QString tableName)
 
 void DatabaseManager::insertValue2Table(QSqlDatabase db, QString tableName, QVector<QString> colName, QVector<QString> value)
 {
-     RTU_DEBUG <<__FILE__<<__LINE__;
+     RTU_DEBUG;
     QSqlTableModel model(0,db);
     model.setTable(tableName);
     model.select();
-     RTU_DEBUG <<__FILE__<<__LINE__;
+     RTU_DEBUG;
     QSqlRecord record = model.record();
     for (int i = 0; i < colName.size(); i++)
         record.setValue(colName[i],value[i]);
-     RTU_DEBUG <<__FILE__<<__LINE__;
+     RTU_DEBUG;
     model.insertRecord(model.rowCount(),record);
 }
 
@@ -175,7 +176,7 @@ void DatabaseManager::insertValue2Table(QSqlDatabase db, QString tableName, QVec
     QSqlRecord record = model.record();
     for (int i = 0; i < record.count(); i++)
         record.setValue(i,value[i]);
-    RTU_DEBUG<<Q_FUNC_INFO<<__LINE__<<model.insertRecord(model.rowCount(),record)<<value;
+    RTU_DEBUG<<model.insertRecord(model.rowCount(),record)<<value;
 }
 
 QSqlRecord DatabaseManager::getTabelRecord(QSqlDatabase db, QString tableName, int index)

@@ -5,6 +5,9 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     DatabaseManager myDb;
-    myDb.connectDB("sd");
+    myDb.connectDB("AA");
+    myDb.connectDB("BB");
+    myDb.getDB("AA");
+    myDb.getDB("BB");
     return a.exec();
 }
