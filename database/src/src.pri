@@ -1,7 +1,4 @@
-INCLUDEPATH += $$PWD/databasemanager
+INCLUDEPATH += $$PWD
+DEPENDPATH += $$PWD
 
-HEADERS += \
-    $$PWD/databasemanager/databasemanager.h
-
-SOURCES += \
-    $$PWD/databasemanager/databasemanager.cpp
+include($$PWD/databasemanager/databasemanager.pri)
