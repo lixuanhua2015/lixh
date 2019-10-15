@@ -5,22 +5,27 @@ DatabaseManager::DatabaseManager(QObject *parent) :
 {
 }
 
+DatabaseManager::DatabaseManager(const QString &dbName, const QString &connectionName, QObject *parent) :
+    QObject(parent)
+{
+   connectDB(dbName, connectionName);
+}
+
 DatabaseManager::~DatabaseManager()
 {
 
 }
 
-void DatabaseManager::connectDB(QString dbName)
+void DatabaseManager::connectDB(const QString &dbName, const QString &connectionName)
 {
     QSqlDatabase db;
-
-    if (dbName == NULL){
+    if (connectionName == NULL){
         db = QSqlDatabase::addDatabase("QSQLITE");
     } else {
-        db = QSqlDatabase::addDatabase("QSQLITE",dbName);
+        db = QSqlDatabase::addDatabase("QSQLITE",connectionName);
     }
     RTU_DEBUG << db.connectionName();
-    db.setDatabaseName("mydatabase.db");
+    db.setDatabaseName(dbName);
     if (db.open()){
         RTU_DEBUG << "open db sucess";
     } else {
@@ -29,21 +34,21 @@ void DatabaseManager::connectDB(QString dbName)
     RTU_DEBUG<<db.connectionName()<<db.databaseName();
 }
 
-QSqlDatabase DatabaseManager::getDB(QString dbName)
+QSqlDatabase DatabaseManager::getDB(QString connectionName)
 {
     QSqlDatabase db;
 
-    if (dbName == NULL){
+    if (connectionName == NULL){
         db = QSqlDatabase::database();
     } else {
-        if (QSqlDatabase::contains(dbName)){
+        if (QSqlDatabase::contains(connectionName)){
             RTU_DEBUG << "db contains dbName.";
-            db = QSqlDatabase::database(dbName);
+            db = QSqlDatabase::database(connectionName);
         } else {
-            db = QSqlDatabase::addDatabase("QSQLITE",dbName);
+            db = QSqlDatabase::addDatabase("QSQLITE",connectionName);
         }
     }
-    RTU_DEBUG<<db.connectionName()<<db.databaseName()<<QSqlDatabase::contains(dbName)<<dbName;
+    RTU_DEBUG<<db.connectionName()<<db.databaseName()<<QSqlDatabase::contains(connectionName)<<connectionName;
     return db;
 }
 
@@ -55,10 +60,10 @@ QSqlDatabase DatabaseManager::getDB()
     return db;
 }
 
-void DatabaseManager::disconnectDB(QString dbName)
+void DatabaseManager::disconnectDB(QString connectionName)
 {
-    if (dbName != NULL && QSqlDatabase::contains(dbName)){
-        QSqlDatabase::removeDatabase(dbName);
+    if (connectionName != NULL && QSqlDatabase::contains(connectionName)){
+        QSqlDatabase::removeDatabase(connectionName);
     }
 }
 

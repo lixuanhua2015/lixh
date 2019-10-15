@@ -24,14 +24,15 @@ class DatabaseManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit DatabaseManager(QObject *parent = 0);
+    explicit DatabaseManager(QObject *parent = NULL);
+    DatabaseManager(const QString &dbName, const QString &connectionName = NULL, QObject *parent = NULL);
     ~DatabaseManager();
 
     /**
      * @brief 连接数据库
      * @param 数据库名
      */
-    void connectDB(QString dbName);
+    void connectDB(const QString &dbName, const QString &connectionName);
     /**
      * @brief 获取数据库
      * @param dbName
