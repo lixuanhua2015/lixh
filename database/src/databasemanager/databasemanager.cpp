@@ -330,6 +330,15 @@ bool DatabaseManager::deleteEntries(QSqlDatabase db,QString tabName, QString com
     return true;
 }
 
+// 清除表格
+bool DatabaseManager::deleteTable(QString &tableName)
+{
+    QSqlQuery query(QSqlDatabase::database());
+    QString sqlCmd = "DROP TABLE " + tableName;
+    RTU_DEBUG << "DELETE table: " << sqlCmd;
+    return query.exec(sqlCmd);
+}
+
 bool DatabaseManager::addValues2Table(QSqlDatabase db,QString tabName, QVector<QVector<QString> > values)
 {
     QSqlQuery m_query(db);

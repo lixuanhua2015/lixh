@@ -227,6 +227,13 @@ public:
                QString command);
 
     /**
+     * @brief 清除表格
+     * @param tableName
+     * @return
+     */
+    bool deleteTable(QString &tableName);
+
+    /**
      * @brief 向表中添加多个数据
      * @param tabName
      * @param values
