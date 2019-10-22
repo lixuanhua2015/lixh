@@ -24,7 +24,6 @@ void DatabaseManager::connectDB(const QString &dbName, const QString &connection
     } else {
         db = QSqlDatabase::addDatabase("QSQLITE",connectionName);
     }
-    RTU_DEBUG << db.connectionName();
     db.setDatabaseName(dbName);
     if (db.open()){
         RTU_DEBUG << "open db sucess";

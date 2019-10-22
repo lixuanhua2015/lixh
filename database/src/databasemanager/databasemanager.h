@@ -30,7 +30,7 @@ public:
 
     /**
      * @brief 连接数据库
-     * @param 数据库名
+     * @param dbName：数据库名 connectionName：连接名字
      */
     void connectDB(const QString &dbName, const QString &connectionName);
     /**
