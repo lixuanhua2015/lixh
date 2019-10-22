@@ -1,6 +1,6 @@
 INCLUDEPATH += $$PWD
 DEPENDPATH += $$PWD
 
-HEADERS += $$PWD/iotobject.h
+HEADERS += $$PWD/IoTObject.h
 
-SOURCES += $$PWD/iotobject.cpp
+SOURCES += $$PWD/IoTObject.cpp
