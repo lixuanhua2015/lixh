@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QDebug>
 #include <QVariant>
+#include <stdint.h>
 
 #define W_LONG_NAME_CMD     0x01
 #define W_SHORT_NAME_CMD    0x03
@@ -78,7 +79,7 @@ public:
         kReadOnly,
         kWriteAndRead
     };
-    bool setParameter(const IoTConfigParam *paramList, const int &len);
+    bool setParameter(IoTConfigParam *paramList, const int &len);
 
     void getSendBuffer(char *sendBuf, const int sendLen);
 

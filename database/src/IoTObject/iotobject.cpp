@@ -29,7 +29,7 @@ NewIoTObject::~NewIoTObject()
 }
 
 // 创建对象时，一定要setParameter，后续很多功能都必须在调用setParameter的前提下才能执行
-bool NewIoTObject::setParameter(const IoTConfigParam *paramList, const int &len)
+bool NewIoTObject::setParameter(IoTConfigParam *paramList, const int &len)
 {
     if (len <= 0) {
         return false;
@@ -263,7 +263,7 @@ int NewIoTObject::prepareWriteShortName()
     int len = CMD_HEAD_LEN + LONG_ADDR_LEN + SHORT_ADDR_LEN;
 
     // 添加CRC校验码
-    VirtualPort::addCRCWord(m_sendBuf, len);
+    //VirtualPort::addCRCWord(m_sendBuf, len);
     len += CRC_LEN; // 长度加上2位CRC校验码
     {// 计算该命令发送后，接收数据的长度
         int recvLen = CMD_HEAD_LEN + CRC_LEN;
@@ -291,7 +291,7 @@ int NewIoTObject::prepareWriteProperties()
         len = valueStartId;
         m_sendBuf[3] = len - CMD_HEAD_LEN;
         // 添加CRC校验码
-        VirtualPort::addCRCWord(m_sendBuf, len);
+        // VirtualPort::addCRCWord(m_sendBuf, len);
         len += CRC_LEN; // 长度加上2位CRC校验码
         {// 计算该命令发送后，接收数据的长度
             int recvLen = CMD_HEAD_LEN + CRC_LEN;
@@ -318,7 +318,7 @@ int NewIoTObject::prepareReadProperties()
         }
         len = startId + readListSize;
         // 添加CRC校验码
-        VirtualPort::addCRCWord(m_sendBuf, len);
+        // VirtualPort::addCRCWord(m_sendBuf, len);
         len += CRC_LEN; // 长度加上2位CRC校验码
         {// 计算该命令发送后，接收数据的长度
             int recvLen = CMD_HEAD_LEN + (1 + readListSize + valueByteNum) + CRC_LEN;
@@ -350,7 +350,8 @@ void NewIoTObject::writeParam2SendBuffer(const int &startId, const int &paramId)
         break;
     case kDataTypeFloat:
     {
-        char *chValue = (char*)(&value.toFloat());
+        float floatValue = value.toFloat();
+        char *chValue = (char*)(&floatValue);
         if (analysisType == kAnalTypeH) {
             for (int i = 0; i < paramLen; ++i) {
                 m_sendBuf[startId + i] = chValue[i];
