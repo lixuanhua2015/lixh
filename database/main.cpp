@@ -45,13 +45,19 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    int arr[20] = {0};
-    srand((int)time(0));
-    for (int i = 0; i < 20; ++i) {
-        arr[i] = rand() % 1000;
+//    int arr[20] = {0};
+//    srand((int)time(0));
+//    for (int i = 0; i < 20; ++i) {
+//        arr[i] = rand() % 1000;
+//    }
+//    printArr(arr, 20);
+//    insertSort(arr, 20);
+//    printArr(arr, 20);
+    float floatValue = 27.000000;
+    char *chValue = (char*)(&floatValue);
+    for (int i = 0; i < 4; ++i) {
+        RTU_DEBUG << (chValue[i] & 0xff);
     }
-    printArr(arr, 20);
-    insertSort(arr, 20);
-    printArr(arr, 20);
+
     return a.exec();
 }
