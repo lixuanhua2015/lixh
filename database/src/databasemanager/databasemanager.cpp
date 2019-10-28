@@ -1,10 +1,20 @@
 #include "databasemanager.h"
 
+/**
+ * @brief DatabaseManager::DatabaseManager
+ * @param parent
+ */
 DatabaseManager::DatabaseManager(QObject *parent) :
     QObject(parent)
 {
 }
 
+/**
+ * @brief DatabaseManager::DatabaseManager 构造函数
+ * @param dbName 数据库名字
+ * @param connectionName 连接名称
+ * @param parent
+ */
 DatabaseManager::DatabaseManager(const QString &dbName, const QString &connectionName, QObject *parent) :
     QObject(parent)
 {
@@ -16,14 +26,22 @@ DatabaseManager::~DatabaseManager()
 
 }
 
+/**
+ * @brief DatabaseManager::connectDB 连接数据库
+ * @param dbName 数据库名字
+ * @param connectionName 连接名称
+ */
 void DatabaseManager::connectDB(const QString &dbName, const QString &connectionName)
 {
     QSqlDatabase db;
     if (connectionName == NULL){
+        // 添加数据库驱动，默认连接名称，可以直接调用database（）方法来获得这个默认连接
         db = QSqlDatabase::addDatabase("QSQLITE");
     } else {
+        // 添加数据库驱动，并指定连接名称为connectionName，可以调用database（connectionName）方法来获取这个连接
         db = QSqlDatabase::addDatabase("QSQLITE",connectionName);
     }
+    // 创建数据库（不存在新建，存在不新建）
     db.setDatabaseName(dbName);
     if (db.open()){
         RTU_DEBUG << "open db sucess";
@@ -33,6 +51,11 @@ void DatabaseManager::connectDB(const QString &dbName, const QString &connection
     RTU_DEBUG<<db.connectionName()<<db.databaseName();
 }
 
+/**
+ * @brief DatabaseManager::getDB 获得数据库实例
+ * @param connectionName 连接名称
+ * @return 返回数据库实例
+ */
 QSqlDatabase DatabaseManager::getDB(QString connectionName)
 {
     QSqlDatabase db;
