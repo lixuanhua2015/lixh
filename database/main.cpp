@@ -2,6 +2,7 @@
 #include "databasemanager.h"
 #include <cstdlib>
 #include <ctime>
+#include <QFile>
 
 /*插入排序
  * 选择一个比较的基准数temp，从数组角标1一直遍历到结束；
@@ -41,23 +42,55 @@ void printArr(int *arr, const size_t &len)
     qDebug()<<str;
 }
 
+/**
+ * @brief loggingHandler 日志QDebug输出至文件，联合qInstallMessageHandler(loggingHandler)使用
+ * @param type
+ * @param str
+ */
+void loggingHandler(QtMsgType type, const QMessageLogContext &, const QString &str)
+{
+    QFile logFile("./log");
+    // 打开方式：只写并且是追加
+    logFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    QByteArray localMsg = str.toLocal8Bit();
+    const char *msg = str.toStdString().c_str();
+    QTextStream textStream(&logFile);
+    switch (type) {
+    case QtDebugMsg:
+        textStream << " Debug: " << localMsg.data() << endl;
+        //NOP
+        break;
+    case QtWarningMsg:
+        textStream << QTime::currentTime().toString().toLatin1().data() << " Warning: " << msg << endl;
+        break;
+    case QtCriticalMsg:
+        textStream << QTime::currentTime().toString().toLatin1().data() << " Critical: " << msg << endl;
+        break;
+    case QtFatalMsg:
+        textStream << QTime::currentTime().toString().toLatin1().data() << " Fatal: " << msg << endl;
+        break;
+    default:
+        break;
+    }
+    logFile.flush();
+    logFile.close();
+    // 如果文件大小大于某个数值时，将会把该文件保存为另一个文件，然后继续输出
+    if(logFile.size() >= 1024 * 30)
+    {
+        QFile tempFile("./log1");
+        // 另存为一个文件时，如果这个文件存在就删除
+        if (tempFile.exists()) {
+            tempFile.remove();
+        }
+        logFile.rename("log1");
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-//    int arr[20] = {0};
-//    srand((int)time(0));
-//    for (int i = 0; i < 20; ++i) {
-//        arr[i] = rand() % 1000;
-//    }
-//    printArr(arr, 20);
-//    insertSort(arr, 20);
-//    printArr(arr, 20);
-    float floatValue = 27.000000;
-    char *chValue = (char*)(&floatValue);
-    for (int i = 0; i < 4; ++i) {
-        RTU_DEBUG << (chValue[i] & 0xff);
-    }
+    RTU_DEBUG << QString("lixh %1,%2").arg(12).arg(23);
 
     return a.exec();
 }
