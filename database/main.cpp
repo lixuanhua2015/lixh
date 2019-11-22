@@ -90,7 +90,12 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    RTU_DEBUG << QString("lixh %1,%2").arg(12).arg(23);
+
+    QString str = "z";
+    bool isOK;
+    int x = str.toInt(&isOK, 36);
+
+    RTU_DEBUG << x;
 
     return a.exec();
 }
