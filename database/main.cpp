@@ -12,11 +12,16 @@
  * 或者一直遍历到第一个元素也没有找到比temp小的元素时，将第一个元素的位置上赋值为temp；
  * 一直遍历到结束及完成了插入排序
  */
+/**
+ * @brief insertSort 插入排序
+ * @param arr 数组
+ * @param len 长度
+ */
 void insertSort(int *arr, const size_t &len)
 {
     for (size_t i = 1; i < len; ++i) {
         int temp = arr[i];
-        int j = 0;
+        size_t j = 0;
         for (j = i - 1; j >= 0; --j) {
             if (arr[j] > temp) {
                 arr[j + 1] = arr[j];
@@ -32,7 +37,7 @@ void insertSort(int *arr, const size_t &len)
 void printArr(int *arr, const size_t &len)
 {
     QString str = "arr:[" + QString::number(arr[0]);
-    for (int i = 1; i < len; ++i) {
+    for (size_t i = 1; i < len; ++i) {
         str += ", ";
         str += QString::number(arr[i]);
         if (i == len - 1) {
@@ -95,7 +100,7 @@ int main(int argc, char *argv[])
     bool isOK;
     int x = str.toInt(&isOK, 36);
 
-    RTU_DEBUG << x;
+    RTU_DEBUG << QByteArray::fromHex("FFFEA1");
 
     return a.exec();
 }
