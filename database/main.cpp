@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <QFile>
+#include <time.h>
 
 /*插入排序
  * 选择一个比较的基准数temp，从数组角标1一直遍历到结束；
@@ -33,7 +34,29 @@ void insertSort(int *arr, const size_t &len)
         arr[j + 1] = temp;
     }
 }
-
+/**
+ * @brief bubbleSort 冒泡排序，原理：每次从左到右两两比较，把大的交换到后面，每次可以
+ *                   确保将前M个元素的最大值移动到最右边；
+ * @param arr 数组指针
+ * @param len 数组长度
+ */
+void bubbleSort(int *arr, const size_t &len)
+{
+    for (size_t i = len - 1; i > 0; --i) {
+        for (size_t j = 0; j < i; ++j) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+/**
+ * @brief printArr 输出数组中的数据
+ * @param arr   数组指针
+ * @param len   数组长度
+ */
 void printArr(int *arr, const size_t &len)
 {
     QString str = "arr:[" + QString::number(arr[0]);
@@ -95,12 +118,14 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-
-    QString str = "z";
-    bool isOK;
-    int x = str.toInt(&isOK, 36);
-
-    RTU_DEBUG << QByteArray::fromHex("FFFEA1");
-
+    srand((unsigned)time(NULL));
+    const int len = 20;
+    int arr[len] = {0};
+    for (int i = 0; i < len; ++i) {
+        arr[i] = rand() % 100;
+    }
+    printArr(arr, len);
+    bubbleSort(arr, len);
+    printArr(arr, len);
     return a.exec();
 }
