@@ -53,6 +53,28 @@ void bubbleSort(int *arr, const size_t &len)
     }
 }
 /**
+ * @brief selectionSort 选择排序：每次都从乱序数组中找到最大（最小）值，放到当前乱序数组头部，最终使数组有序
+ * @param arr 数组指针
+ * @param len 数组长度
+ */
+void selectionSort(int *arr, const size_t &len)
+{
+    for (size_t i = 0; i < len - 1; ++i) {
+        size_t min = i;
+        // 找到角标i后面数组中最小值的角标min
+        for (size_t j = i + 1; j < len; ++j) {
+            if (arr[j] < arr[min]) {
+                min = j;
+            }
+        }
+        // 将角标min上的值与角标i上的值交换位置
+        int temp = arr[i];
+        arr[i] = arr[min];
+        arr[min] = temp;
+    }
+}
+
+/**
  * @brief printArr 输出数组中的数据
  * @param arr   数组指针
  * @param len   数组长度
@@ -125,7 +147,8 @@ int main(int argc, char *argv[])
         arr[i] = rand() % 100;
     }
     printArr(arr, len);
-    bubbleSort(arr, len);
+//    bubbleSort(arr, len);
+    selectionSort(arr, len);
     printArr(arr, len);
     return a.exec();
 }
