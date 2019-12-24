@@ -4,6 +4,7 @@
 #include <ctime>
 #include <QFile>
 #include <time.h>
+#include <QTextCodec>
 
 /*插入排序
  * 选择一个比较的基准数temp，从数组角标1一直遍历到结束；
@@ -135,20 +136,33 @@ void loggingHandler(QtMsgType type, const QMessageLogContext &, const QString &s
         logFile.rename("log1");
     }
 }
+/**
+ * @brief strToUnicode 字符串转Unicode码
+ * @param str 输入的字符串
+ * @return
+ */
+QString strToUnicode(const QString &str)
+{
+    QTextCodec *codec = QTextCodec::codecForName("UTF8");
+    QString name = codec->toUnicode(str.toUtf8().data());
+    QString strout;
+    for (int i=0; i<name.length(); ++i)
+    {
+        ushort num = name[i].unicode();
+        if (num < 255)
+            strout += "00";
+
+        strout += QString::number(num,16);
+
+    }
+    return strout;
+}
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    srand((unsigned)time(NULL));
-    const int len = 20;
-    int arr[len] = {0};
-    for (int i = 0; i < len; ++i) {
-        arr[i] = rand() % 100;
-    }
-    printArr(arr, len);
-//    bubbleSort(arr, len);
-    selectionSort(arr, len);
-    printArr(arr, len);
+    QString str = strToUnicode("你好125");
+    qDebug() << str << str.size();
     return a.exec();
 }
