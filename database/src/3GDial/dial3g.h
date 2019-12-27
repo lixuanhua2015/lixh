@@ -103,6 +103,13 @@ public slots:
     void sendShortMessage(const QByteArray &message, const QByteArray &phoneNum);
 
     void sendMsg(const QByteArray &message, const QByteArray &phoneNum);
+    /**
+     * @brief sendTextMsg 发送text纯文本短信
+     * @param message 短信内容
+     * @param phoneNum 接收短信的电话号码
+     * @return 返回是否发送短信成功
+     */
+    bool sendTextMsg(const QByteArray &message, const QByteArray &phoneNum);
 
 signals:
     void refresh3GSig();

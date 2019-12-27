@@ -1,9 +1,8 @@
-#include <QDebug>
+﻿#include <QDebug>
 #include <QDateTime>
 #include <QTextCodec>
 #include <QNetworkInterface>
 #include "dial3g.h"
-#include "qbytearray.h"
 
 Dial3G::Dial3G()
 {
@@ -152,7 +151,7 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
     char read[255];
     int readLen = 0;
     // 发送短信为文本模式
-    QByteArray megMode = QByteArray("AT+CMGF=0\r");
+    QByteArray megMode("AT+CMGF=0\r");
     m_serialPort->write(megMode.data(), megMode.size());
     QThread::sleep(1);
     readLen = m_serialPort->read(read,255);
@@ -161,7 +160,7 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
         return;
     }
     // 确定字符集
-    QByteArray cscsMode = QByteArray("AT+CSCS=\"UCS2\"\r");
+    QByteArray cscsMode("AT+CSCS=\"UCS2\"\r");
     m_serialPort->write(cscsMode.data(), cscsMode.size());
     QThread::sleep(1);
     readLen = m_serialPort->read(read,255);
@@ -170,7 +169,7 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
         return;
     }
     // 设置sms模式
-    QByteArray smsMode = QByteArray("AT+SMSMODE=1\r");
+    QByteArray smsMode("AT+SMSMODE=1\r");
     m_serialPort->write(smsMode.data(), smsMode.size());
     QThread::sleep(1);
     readLen = m_serialPort->read(read,255);
@@ -179,7 +178,7 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
         return;
     }
     // 设置GSMPDU使能
-    QByteArray gsmPduEn = QByteArray("AT+GSMPDUEN=1\r");
+    QByteArray gsmPduEn("AT+GSMPDUEN=1\r");
     m_serialPort->write(gsmPduEn.data(), gsmPduEn.size());
     QThread::sleep(1);
     readLen = m_serialPort->read(read,255);
@@ -205,7 +204,8 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
     QByteArray pid = "0008B0";
     messageCmd.append(pid);
     QByteArray msgNumHex = QString::number(msgLen, 16).toLatin1();
-    if (msgNumHex.size() < 16) {
+    // 短信长度未超过16时，转换为16进制时为0-F，前面必须加上0才是一个字节；
+    if (msgLen < 16) {
         msgNumHex.insert(0, "0");
     }
     messageCmd.append(msgNumHex);
@@ -217,6 +217,48 @@ void Dial3G::sendMsg(const QByteArray &message, const QByteArray &phoneNum)
     QThread::sleep(1);
     readLen = m_serialPort->read(read,255);
     RTU_DEBUG<< QByteArray(read, readLen);
+}
+
+bool Dial3G::sendTextMsg(const QByteArray &message, const QByteArray &phoneNum)
+{
+    RTU_DEBUG << "sendShortMessage" << message.size() << phoneNum.size();
+    if (message.size() <= 0 || phoneNum.size() != 11) {
+        return false;
+    }
+    char read[255];
+    int readLen = 0;
+    // 发送短信为文本模式
+    QByteArray megMode("AT+CMGF=1\r");
+    m_serialPort->write(megMode.data(), megMode.size());
+    readLen = m_serialPort->read(read,255);
+    if (!QByteArray(read, readLen).contains("OK")) {
+        return false;
+    }
+    // 确定字符集
+    QByteArray cscsMode("AT+CSCS=\"GSM\"\r");
+    m_serialPort->write(cscsMode.data(), cscsMode.size());
+    readLen = m_serialPort->read(read,255);
+    if (!QByteArray(read, readLen).contains("OK")) {
+        return false;
+    }
+    // 设置短信接收电话号码
+    QByteArray smsMode("AT+CMGS=\"15328241869\"\r");
+    m_serialPort->write(smsMode.data(), smsMode.size());
+    readLen = m_serialPort->read(read,255);
+    RTU_DEBUG<< QByteArray(read, readLen);
+    if (!QByteArray(read, readLen).contains(">")) {
+        return false;
+    }
+    // 短信内容
+    QByteArray messageCmd = "TEST";
+    messageCmd.append(0x1a); // 添加短信结束符<ctrl-Z>
+    m_serialPort->write(messageCmd.data(), messageCmd.size());
+    QThread::sleep(1);
+    readLen = m_serialPort->read(read,255);
+    if (!QByteArray(read, readLen).contains("OK")) {
+        return false;
+    }
+    return true;
 }
 
 QString Dial3G::strToUnicode(const QString &str)
