@@ -9,6 +9,7 @@
 #include <time.h>
 #include <QTextCodec>
 #include <QList>
+#include <QVector>
 #include "parambase.h"
 void swapArr(char *srcArr, char *destArr);
 void insertSort(int *arr, const size_t &len);
@@ -25,6 +26,8 @@ int getMinChangeCount(char arr[]);
 void changeAndCopyChar(const char arr[]);
 int changeArr(char arr[], const char srcChar[], const char destArr[]);
 void changeStarSite(char arr[], int algType);
+void getChildArr(char arr[]);
+bool isChildAnagram(const char baseArr[], const char childArr[]);
 
 /**
  * @brief swapArr 字符交换位置
@@ -409,4 +412,70 @@ void changeStarSite(char arr[], int algType)
         break;
     }
 }
+/**
+ * @brief getChildArr 获取字符串n个字符的子串，子串的个数=n*（n-1)/2 + 1,1代表空子串
+ * @param arr 字符串
+ */
+void getChildArr(char arr[])
+{
+    int len =  strlen(arr);
+    for (int i = 0; i < len; ++i) {
+        for (int j = 1; j <= len - i; ++j) {
+            RTU_DEBUG << QByteArray(arr + i,j);
+        }
+    }
+}
+/**
+ * @brief isChildAnagram 判断是否为字符串(字符串内容为英文小写字母)的子串的变位词
+ * @param baseArr 字符串
+ * @param childArr 判断的子串
+ * @return  返回值是否为字符串子串的变位词
+ */
+bool isChildAnagram(const char baseArr[], const char childArr[])
+{
+    // 用来存储子串中每个应为字母出现的次数
+    QVector<int> count(26, 0);
+    int nonZero = 0;
+    int baseArrLen = strlen(baseArr);
+    int childAddLen = strlen(childArr);
+    // 计算出子串中每个小写英文字母出现的次数
+    for (int i = 0; i < childAddLen; ++i) {
+        if (++count[childArr[i] - 'a'] == 1) {
+            nonZero++;
+        }
+    }
+    for (int i = 0; i < childAddLen; ++i) {
+        int index = baseArr[i] - 'a';
+        count[index]--;
+        if (count[index] == 0) {
+            nonZero--;
+        } else if (count[index] == -1) {
+            nonZero++;
+        }
+    }
+    if (nonZero == 0) {
+        return true;
+    }
+    for (int i = childAddLen; i < baseArrLen; ++i) {
+        int index = baseArr[i - childAddLen] - 'a';
+        count[index]++;
+        if (count[index] == 0) {
+            nonZero--;
+        } else if (count[index] == 1) {
+            nonZero++;
+        }
+        index = baseArr[i] - 'a';
+        count[index]--;
+        if (count[index] == 0) {
+            nonZero--;
+        } else if (count[index] == -1) {
+            nonZero++;
+        }
+        if (nonZero == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 #endif // MYARITHMETIC_H

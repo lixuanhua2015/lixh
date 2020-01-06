@@ -7,17 +7,11 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    char arr[] = "1321**321*1321**654*465468**";
+    char baseArr[] = "abcdefghijklmnopqrstuvwxyz";
+    char arr[] = "fgohi";
+    printArr(baseArr, strlen(baseArr));
     printArr(arr, strlen(arr));
-    changeStarSite(arr,2);
-    printArr(arr, strlen(arr));
-    char arr1[] = "1321**321*1321**654*465468**";
-    printArr(arr1, strlen(arr1));
-    changeStarSite(arr1,1);
-    printArr(arr1, strlen(arr1));
-    char arr2[] = "1321**321*1321**654*465468**";
-    printArr(arr2, strlen(arr2));
-    changeStarSite(arr2,0);
-    printArr(arr2, strlen(arr2));
+    RTU_DEBUG << isChildAnagram(baseArr, arr);
+
     return a.exec();
 }
