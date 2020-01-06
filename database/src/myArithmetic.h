@@ -8,9 +8,35 @@
 #include <QFile>
 #include <time.h>
 #include <QTextCodec>
+#include <QList>
 #include "parambase.h"
+void swapArr(char *srcArr, char *destArr);
+void insertSort(int *arr, const size_t &len);
+void bubbleSort(int *arr, const size_t &len);
+void selectionSort(int *arr, const size_t &len);
+template<class T>
+void printArr(T *arr, const size_t &len);
+void loggingHandler(QtMsgType type, const QMessageLogContext &, const QString &str);
+QString strToUnicode(const QString &str);
+void makePartMatchValue(const char matchTable[], int next[]);
+void makeNext(const char matchTable[], int next[]);
+QList<int> kmp(const char bigTable[], const char matchTable[]);
+int getMinChangeCount(char arr[]);
+void changeAndCopyChar(const char arr[]);
+int changeArr(char arr[], const char srcChar[], const char destArr[]);
+void changeStarSite(char arr[], int algType);
 
-
+/**
+ * @brief swapArr 字符交换位置
+ * @param srcArr 字符位置1
+ * @param destArr 字符位置2
+ */
+void swapArr(char *srcArr, char *destArr)
+{
+    char temp = srcArr[0];
+    srcArr[0] = destArr[0];
+    destArr[0] = temp;
+}
 /*插入排序
  * 选择一个比较的基准数temp，从数组角标1一直遍历到结束；
  * 然后用temp与temp前面的元素比较，从temp前面第一个元素遍历到数组第一个元素；
@@ -85,17 +111,17 @@ void selectionSort(int *arr, const size_t &len)
  * @param arr   数组指针
  * @param len   数组长度
  */
-void printArr(int *arr, const size_t &len)
+template<class T>
+void printArr(T *arr, const size_t &len)
 {
-    QString str = "arr:[" + QString::number(arr[0]);
+    QString str = "arr:[" + QString(arr[0]);
     for (size_t i = 1; i < len; ++i) {
-        str += ", ";
-        str += QString::number(arr[i]);
+        str += QString(arr[i]);
         if (i == len - 1) {
             str += "]";
         }
     }
-    qDebug()<<str;
+    qDebug()<<str << len;
 }
 
 /**
@@ -230,12 +256,13 @@ void makeNext(const char matchTable[], int next[])
  * @param next 匹配数组
  * @return
  */
-int kmp(const char bigTable[], const char matchTable[], int next[])
+QList<int> kmp(const char bigTable[], const char matchTable[])
 {
     int bigLen = strlen(bigTable);
     int matchLen = strlen(matchTable);
+    int *next = new int[matchLen];
     makeNext(matchTable, next);
-    int result = 0;
+    QList<int> result;
     for (int i = 0, q = 0; i< bigLen; ++i) {
         while (q > 0 && matchTable[q] != bigTable[i]) {
             q = next[q - 1];
@@ -244,11 +271,142 @@ int kmp(const char bigTable[], const char matchTable[], int next[])
             q++;
         }
         if (q == matchLen) {
-            result = i - matchLen + 1;
+            result.append(i - matchLen + 1);
             RTU_DEBUG << result;
         }
     }
+    delete [] next;
     return result;
 }
-
+/**
+ * @brief getMinChangeCount 获取0-1字符串进行排序时，最少的交换次数
+ * @param arr 0-1字符串
+ * @return 最少的交换次数
+ */
+int getMinChangeCount(char arr[])
+{
+    int len = strlen(arr);
+    int count = 0;
+    for (int i = 0, j = len - 1; i < j; ++i, --j) {
+        for (; i < j && arr[i] == '0'; ++i);
+        for (; i < j && arr[j] == '1'; --j);
+        if (i < j) {
+            count++;
+            char temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+    return count;
+}
+/**
+ * @brief changeAndCopyChar 删除字符串中的a，并复制所有的b
+ * @param arr
+ */
+void changeAndCopyChar(const char arr[])
+{
+    int len = strlen(arr);
+    const int denstLen = 2 * len;
+    char *buf = new char[denstLen];
+    printArr(arr, len);
+    int bufLen = len;
+    for (int i = 0,j = 0; i < len; ++i) {
+        if (arr[i] != 'a') {
+            buf[j++] = arr[i];
+            if (arr[i] == 'b') {
+                buf[j++] = 'b';
+                bufLen++;
+            }
+        } else {
+            bufLen--;
+        }
+    }
+    printArr(buf, bufLen);
+    delete [] buf;
+}
+/**
+ * @brief changeArr 将字符串中某个字符替换成字符串
+ * @param arr 原字符串
+ * @param srcChar 原字符
+ * @param destArr 替换后的字符串
+ * @return 返回最终数组的长度
+ */
+int changeArr(char arr[], const char srcChar[], const char destArr[])
+{
+    QList<int> srcCharNum = kmp(arr, srcChar);
+    RTU_DEBUG << srcCharNum.size();
+    int srcLen = strlen(srcChar);
+    int destArrLen = strlen(destArr);
+    int arrLen = strlen(arr);
+    int resultLen = arrLen + srcCharNum.size() * (destArrLen - srcLen);
+    if (resultLen > arrLen) {
+        for (int i = arrLen - 1, j = resultLen - 1; i >= 0; --i) {
+            if ((srcCharNum.last() + srcLen - 1) == i) {
+                for (int k = destArrLen - 1; k >= 0; --k) {
+                    arr[j--] = destArr[k];
+                }
+                i -= (srcLen - 1);
+                if (srcCharNum.size() > 1) {
+                    srcCharNum.pop_back();
+                }
+            } else {
+                arr[j--] = arr[i];
+            }
+        }
+    } else {
+        for (int i = 0, j = 0; i < arrLen; ++i) {
+            if (srcCharNum.first() == i) {
+                for (int k = 0; k < destArrLen; ++k) {
+                    arr[j++] = destArr[k];
+                }
+                i += (srcLen - 1);
+                if (srcCharNum.size() > 1) {
+                    srcCharNum.pop_front();
+                }
+            } else {
+                arr[j++] = arr[i];
+            }
+        }
+    }
+    return resultLen;
+}
+/**
+ * @brief changeStarSite 一个字符串中只包含*和数字，将*号都放在开头，但是这个快排算法会改变数字之间的顺序
+ * @param arr 字符串
+ * @param algType 算法类型，0、1算法类型数字顺序会改变，2算法类型数字顺序不会改变
+ */
+void changeStarSite(char arr[], int algType)
+{
+    int len = strlen(arr);
+    switch (algType) {
+    case 0:
+        // 方法一： 数字顺序发生了改变，*号的顺序没有改变
+        for (int i = 0, j = len - 1; i < j; ++i, --j) {
+            for (; i < j && arr[i] == '*'; ++i);
+            for (; i < j && arr[j] != '*'; --j);
+            if (i < j) {
+                swapArr(arr + i, arr + j);
+            }
+        }
+        break;
+    case 1:
+        // 方法二： 数字顺序发生了改变，*号的顺序没有改变
+        for (int i = 0, j = 0; i < len; ++i) {
+            if (arr[i] == '*') {
+                swapArr(arr + i, arr + j++);
+            }
+        }
+        break;
+    case 2:
+        // 方法三： 数字顺序不会改变，'*'号是顺序其实是改变了
+        for (int i = len - 1, j = len - 1; i >= 0; --i) {
+            if (arr[i] != '*') {
+                swapArr(arr + i, arr + j--);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
 #endif // MYARITHMETIC_H
