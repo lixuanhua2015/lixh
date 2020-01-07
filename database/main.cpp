@@ -7,11 +7,11 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    char baseArr[] = "abcdefghijklmnopqrstuvwxyz";
-    char arr[] = "fgohi";
-    printArr(baseArr, strlen(baseArr));
-    printArr(arr, strlen(arr));
-    RTU_DEBUG << isChildAnagram(baseArr, arr);
+    int arr[25] = {0};
+    randomArr(arr, 100, 25);
+    printArr(arr, 25);
+    QList<int> myList = getPartMin(arr, 25);
+    RTU_DEBUG << myList << myList.size();
 
     return a.exec();
 }

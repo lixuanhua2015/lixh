@@ -7,11 +7,14 @@
 #include <ctime>
 #include <QFile>
 #include <time.h>
+#include <time.h>
 #include <QTextCodec>
 #include <QList>
 #include <QVector>
 #include "parambase.h"
 void swapArr(char *srcArr, char *destArr);
+template<class T>
+void randomArr(T arr[], T maxValue, int len);
 void insertSort(int *arr, const size_t &len);
 void bubbleSort(int *arr, const size_t &len);
 void selectionSort(int *arr, const size_t &len);
@@ -28,7 +31,9 @@ int changeArr(char arr[], const char srcChar[], const char destArr[]);
 void changeStarSite(char arr[], int algType);
 void getChildArr(char arr[]);
 bool isChildAnagram(const char baseArr[], const char childArr[]);
-
+void reverseWords(char oldArr[]);
+void reverseArr(char arr[], int n);
+QList<int> getPartMin(int arr[], int len);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -39,6 +44,20 @@ void swapArr(char *srcArr, char *destArr)
     char temp = srcArr[0];
     srcArr[0] = destArr[0];
     destArr[0] = temp;
+}
+template<class T>
+/**
+ * @brief randomArr 随机数填充数组
+ * @param arr 数组
+ * @param maxValue 数组中最大值
+ * @param len 长度
+ */
+void randomArr(T arr[], T maxValue, int len)
+{
+    srand((unsigned)time(NULL));
+    for (int i = 0; i < len; ++i) {
+        arr[i] = rand()%maxValue;
+    }
 }
 /*插入排序
  * 选择一个比较的基准数temp，从数组角标1一直遍历到结束；
@@ -117,9 +136,18 @@ void selectionSort(int *arr, const size_t &len)
 template<class T>
 void printArr(T *arr, const size_t &len)
 {
-    QString str = "arr:[" + QString(arr[0]);
+    QString str;
+    if (typeid (arr[0]) == typeid (int)) {
+        str = "arr:[" + QString::number(arr[0]) + " ";
+    } else if (typeid (arr[0]) == typeid (char)) {
+        str = "arr:[" + QString(arr[0]);
+    }
     for (size_t i = 1; i < len; ++i) {
-        str += QString(arr[i]);
+        if (typeid (arr[0]) == typeid (int)) {
+            str += QString::number(arr[i]) + " ";
+        } else if (typeid (arr[0]) == typeid (char)) {
+            str += QString(arr[i]);
+        }
         if (i == len - 1) {
             str += "]";
         }
@@ -426,7 +454,7 @@ void getChildArr(char arr[])
     }
 }
 /**
- * @brief isChildAnagram 判断是否为字符串(字符串内容为英文小写字母)的子串的变位词
+ * @brief isChildAnagram 判断是否为字符串(字符串内容为英文小写字母)的子串的变位词 滑动窗口
  * @param baseArr 字符串
  * @param childArr 判断的子串
  * @return  返回值是否为字符串子串的变位词
@@ -438,12 +466,14 @@ bool isChildAnagram(const char baseArr[], const char childArr[])
     int nonZero = 0;
     int baseArrLen = strlen(baseArr);
     int childAddLen = strlen(childArr);
-    // 计算出子串中每个小写英文字母出现的次数
+    // 计算出子串中每个小写英文字母出现的次数，当一个英文字母出现一次，nonZero就加1
     for (int i = 0; i < childAddLen; ++i) {
         if (++count[childArr[i] - 'a'] == 1) {
             nonZero++;
         }
     }
+    // 字符串中前childAddLen个字符与childArr匹配，将count中对应英文字母每出现一次就减一，当count为0时，说明baseArr和childArr在这个字母上已经匹配好了
+    // 当count为-1时，说明baseArr在这个字母上比childArr多；
     for (int i = 0; i < childAddLen; ++i) {
         int index = baseArr[i] - 'a';
         count[index]--;
@@ -453,9 +483,14 @@ bool isChildAnagram(const char baseArr[], const char childArr[])
             nonZero++;
         }
     }
+    // nonZero不等于0，说明前childAddLen字符不与childArr匹配
     if (nonZero == 0) {
         return true;
     }
+    // 滑动窗口，窗口向后滑动一位，那么需要消除前一位带来的count上的变化，前面前一位都是减一，那么要消除count上的变化，那么现在
+    // 向后移动一位，需要在前一位字符的count上加一，这样就消除了前一位带来的影响，消除变化后在校验count的值为0，说明在这个字母上
+    // 两个完全匹配了，nonZero减一，如果count为1，说明baseArr在这个字母上比childArr多一个；最后一位也向后移动一位，当前的最后
+    // 一位的字母，对应的count减一，后续操作和上面一致，每向后移动一位，最后要检测nonZero是否为0，若为0就说明找到了childArr的变位词；
     for (int i = childAddLen; i < baseArrLen; ++i) {
         int index = baseArr[i - childAddLen] - 'a';
         count[index]++;
@@ -477,5 +512,99 @@ bool isChildAnagram(const char baseArr[], const char childArr[])
     }
     return false;
 }
-
+/**
+ * @brief reverseWords 翻转句子中全部的单词，单词内容不变
+ * @param oldArr 需要翻转的句子
+ */
+void reverseWords(char oldArr[])
+{
+    int len = strlen(oldArr);
+    int i = 0;
+    int j = len - 1;
+    QList<int> indexInOldArr;
+    // 将首尾的空格放入list中
+    indexInOldArr.push_back(i - 1);
+    indexInOldArr.push_back(len);
+    // 首先找到将整个句子翻转，找到翻转后空格所在的位置，放入list列表中。
+    while (i < j) {
+        if (oldArr[i] == ' ') {
+            indexInOldArr.push_back(j);
+        }
+        if (oldArr[j] == ' ') {
+            indexInOldArr.push_back(i);
+        }
+        swapArr(&oldArr[i++], &oldArr[j--]);
+    }
+    qSort(indexInOldArr);
+    RTU_DEBUG << indexInOldArr;
+    QList<int>::iterator begin = indexInOldArr.begin();
+    // 根据空格，将每个单词再翻转，就恢复单词正常顺序；
+    for (int k = 0; k < indexInOldArr.size() - 1; ++k, ++begin) {
+        i = *begin + 1;
+        j = *(begin + 1) - 1;
+        while (i < j) {
+            swapArr(&oldArr[i++], &oldArr[j--]);
+        }
+    }
+}
+/**
+ * @brief reverseArr 字符串长度m，前n%m翻转，后m-n%m翻转，最后整体翻转,其实就是字符串向前移动n位；
+ * @param arr 字符串
+ * @param n 翻转的位置
+ */
+void reverseArr(char arr[], int n)
+{
+    int len = strlen(arr);
+    printArr(arr, len);
+    if (n > len) {
+        return;
+    }
+    int i = 0;
+    int j = n - 1;
+    while (i < j) {
+        swapArr(arr + i++, arr + j--);
+    }
+    printArr(arr, len);
+    i = n;
+    j = len - 1;
+    while (i < j) {
+        swapArr(arr + i++, arr + j--);
+    }
+    printArr(arr, len);
+    i = 0;
+    j = len - 1;
+    while (i < j) {
+        swapArr(arr + i++, arr + j--);
+    }
+    printArr(arr, len);
+}
+/**
+ * @brief getPartMin 获取数组中所有的局部最小值
+ * @param arr 数组
+ * @return 返回所有的局部最小值
+ */
+QList<int> getPartMin(int arr[], int len)
+{
+    QList<int> res;
+    if (len < 0) {
+        return res;
+    } else if (len == 1) {
+        res.push_back(arr[0]);
+    } else if (len == 2) {
+        res.push_back(arr[0] > arr[1] ? arr[1] : arr[0]);
+    } else if (len >= 3) {
+        if (arr[0] < arr[1]) {
+            res.push_back(arr[0]);
+        }
+        for (int i = 1; i < len - 1; ++i) {
+            if ((arr[i] < arr[i - 1]) && (arr[i] < arr[i + 1])) {
+                res.push_back(arr[i]);
+            }
+        }
+        if (arr[len - 1] < arr[len - 2]) {
+            res.push_back(arr[len - 1]);
+        }
+    }
+    return res;
+}
 #endif // MYARITHMETIC_H

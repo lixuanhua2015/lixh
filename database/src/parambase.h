@@ -3,5 +3,5 @@
 #include <QDebug>
 #include <QThread>
 #include <QDateTime>
-#define RTU_DEBUG qDebug()<<QThread::currentThreadId()<<QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")<<__FILE__<<":"<<__FUNCTION__<<__LINE__<<":"
+#define RTU_DEBUG qDebug()<<QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")<<__FILE__<<":"<<__FUNCTION__<<__LINE__<<":"
 #endif // PARAMBASE_H
