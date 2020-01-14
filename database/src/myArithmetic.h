@@ -34,6 +34,8 @@ bool isChildAnagram(const char baseArr[], const char childArr[]);
 void reverseWords(char oldArr[]);
 void reverseArr(char arr[], int n);
 QList<int> getPartMin(int arr[], int len);
+int firstMissPositive(int arr[], int len);
+int getMaxDistanceInArr(int arr[], int len);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -76,12 +78,11 @@ void insertSort(int *arr, const size_t &len)
 {
     for (size_t i = 1; i < len; ++i) {
         int temp = arr[i];
-        size_t j = 0;
+        int j = 0;
         for (j = i - 1; j >= 0; --j) {
             if (arr[j] > temp) {
                 arr[j + 1] = arr[j];
             } else {
-
                 break;
             }
         }
@@ -607,4 +608,96 @@ QList<int> getPartMin(int arr[], int len)
     }
     return res;
 }
+/**
+ * @brief firstMissPositive 找到数组中缺失的第一个正整数
+ * @param arr 数组
+ * @param len 数组长度
+ * @return  第一个缺失的正整数
+ */
+int firstMissPositive(int arr[], int len)
+{
+    if (len == 0) {
+        return 1;
+    }
+    QVector<int> buf(len, 0);
+    for (int i = 0; i < len; ++i) {
+        if (arr[i] > 0 && arr[i] <= len) {
+            buf[arr[i] - 1]++;
+        }
+    }
+    for (int i = 0; i < len; i++) {
+        if (buf[i] == 0) {
+            return i + 1;
+        }
+    }
+    return len + 1;
+}
+/**
+ * @brief getMaxDistanceInArr 获取数组中元素间最大间距离
+ * @param arr 数组
+ * @param len 长度
+ * @return 最大间距离
+ */
+int getMaxDistanceInArr(int arr[], int len)
+{
+    int maxInt = std::numeric_limits<int>::max();
+    int minInt = std::numeric_limits<int>::min();
+    int maxInArr = arr[0];
+    int minInArr = arr[0];
+    // 找到数组中的最大值和最小值
+    for (int i = 1; i < len; ++i) {
+        if (arr[i] < minInArr) {
+            minInArr = arr[i];
+        }
+        if (arr[i] > maxInArr) {
+            minInArr = arr[i];
+        }
+    }
+    struct TempBuf{
+        int maxInBuf;
+        int minInBuf;
+    };
+    // 将[minInArr,minInArr]平均分为len + 1个区间，初始化每个区间的最大值为minInt，最小值为maxInt，
+    // 方便后续数组中值插入区间是比较更新区间maxInBuf和minInBuf，len个数据插入到len + 1个区间中，
+    // 至少有一个区间是空区间（没有元素在区间范围），最大间距一定在空区间的地方产生；最大间距一定
+    // 会跨越一个区间；所以避免考虑计算同一个区间中的元素，减少工作量
+    TempBuf *buf = new TempBuf[len + 1];
+    for (int i = 0; i < len + 1; ++i) {
+        buf[i].maxInBuf = minInt;
+        buf[i].minInBuf = maxInt;
+    }
+    // 将数组中每个值插入到对应的区间中，并更新区间的maxInBuf和minInBuf
+    for (int i = 0; i < len; ++i) {
+        int index = (arr[i] - minInArr) * (len + 1) / (maxInArr - minInArr);
+        index = index == (len + 1) ? len : index;
+        if (arr[i] < buf[index].minInBuf) {
+            buf[index].minInBuf = arr[i];
+        }
+        if (arr[i] > buf[index].maxInBuf) {
+            buf[index].maxInBuf = arr[i];
+        }
+    }
+    int maxDistance = 0;
+    int indexLast = 0;
+    int indexTemp = 0;
+    // 检查每个区间是否有元素，如果maxInBuf和minInBuf为初始值，说明为空区间；
+    // 用indexLast记录上一个区间的角标；如果下一个区间为空区间，继续检查下一
+    // 个，直到不为空区间时；不为空区间时用该区间的最小值减去indexLast区间的
+    // 最大值得到最大间距，最大间距（maxDistance（和上一个最大间距比较，保留
+    // 最大的值，并将indexLast更新为当前区间，这样找到的maxDistance为最大间距。
+    for (int i = 1; i < len + 1; ++i) {
+        if (buf[i].maxInBuf != minInt) {
+            int tempMaxDis = buf[i].minInBuf - buf[indexLast].maxInBuf;
+            if (tempMaxDis > maxDistance) {
+                maxDistance = tempMaxDis;
+                indexTemp = buf[indexLast].maxInBuf;
+            }
+            indexLast = i;
+        }
+    }
+    RTU_DEBUG << indexTemp;
+    delete [] buf;
+    return maxDistance;
+}
+
 #endif // MYARITHMETIC_H
