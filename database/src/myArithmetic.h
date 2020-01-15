@@ -38,6 +38,8 @@ int firstMissPositive(int arr[], int len);
 int getMaxDistanceInArr(int arr[], int len);
 int singleNumberOne(int arr[], int len);
 int singleNumberTwo(int arr[], int len);
+QVector<int> singleNumberThree(int arr[], int len);
+QVector<int> twoSum(int arr[], int len ,int target);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -737,4 +739,57 @@ int singleNumberTwo(int arr[], int len)
     }
     return a;
 }
+/**
+ * @brief singleNumberThree 给定一个整数数组 nums，其中恰好有两个元素只出现一次，其余所有元素均出现两次。 找出只出现一次的那两个元素。
+ * @param arr 数组
+ * @param len 长度
+ * @return 返回只出现一次的两个元素
+ */
+QVector<int> singleNumberThree(int arr[], int len)
+{
+    int mask = 0;
+    // 得到只出现一次的两个元素的异或结果
+    for (int i = 0; i < len; ++i) {
+        mask ^= arr[i];
+    }
+    // 解析异或结果，得到两个元素转换为二进制时，从低位到高位计算，第一次出现bit位上数字不一样的位置，若bit位0不一样，结果为1；
+    // bit位1不一样，结果为2；bit为2不一样，结果为4...
+    // 也可以写成：mask &= (~mask) + 1
+    mask &= -mask;
+    QVector<int> result(2, 0);
+    // 最新mask值的意义：mask为1的bit位上，两个元素在相同bit位上数字不一样；遍历每个元素&mask，肯定能找到该bit位上为1的元素，
+    // 其他元素都是出现两次，而且这两个元素在该bit为不一样，那么result[0]和result[1]的元素个数都为单数，而且最终结果就是两个元素。
+    // 计算出最新mask，主要是区分两个元素，找到两个元素从低到高位第一个bit位上数字不一样的bit位;
+    for (int i = 0; i < len; ++i) {
+        if ((mask & arr[i]) == mask) {
+            result[0] ^= arr[i];
+        } else {
+            result[1] ^= arr[i];
+        }
+    }
+    return result;
+}
+/**
+ * @brief twoSum 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那两个整数，并返回他们的数组下标。
+ * @param arr 数组
+ * @param len 长度
+ * @param target 和
+ * @return 两个元素的下标
+ */
+QVector<int> twoSum(int arr[], int len ,int target)
+{
+    QHash<int, int> temp;
+    QVector<int> result(2, 0);
+    for (int i = 0; i < len; ++i) {
+        int value = target - arr[i];
+        if (temp.contains(value)) {
+            result[1] = i;
+            result[0] = temp[value];
+            break;
+        }
+        temp[arr[i]] = i;
+    }
+    return result;
+}
+
 #endif // MYARITHMETIC_H

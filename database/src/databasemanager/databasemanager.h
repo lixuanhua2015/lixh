@@ -17,8 +17,8 @@
 #include <QDebug>
 #include <QThread>
 #include <QDateTime>
+#include "parambase.h"
 
-#define RTU_DEBUG qDebug()<<QThread::currentThreadId()<<QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz")<<__FILE__<<":"<<__LINE__<<":"
 
 class DatabaseManager : public QObject
 {
