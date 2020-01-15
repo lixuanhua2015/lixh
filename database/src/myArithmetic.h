@@ -36,6 +36,8 @@ void reverseArr(char arr[], int n);
 QList<int> getPartMin(int arr[], int len);
 int firstMissPositive(int arr[], int len);
 int getMaxDistanceInArr(int arr[], int len);
+int singleNumberOne(int arr[], int len);
+int singleNumberTwo(int arr[], int len);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -640,6 +642,9 @@ int firstMissPositive(int arr[], int len)
  */
 int getMaxDistanceInArr(int arr[], int len)
 {
+    if (len <= 0) {
+        return 0;
+    }
     int maxInt = std::numeric_limits<int>::max();
     int minInt = std::numeric_limits<int>::min();
     int maxInArr = arr[0];
@@ -650,8 +655,11 @@ int getMaxDistanceInArr(int arr[], int len)
             minInArr = arr[i];
         }
         if (arr[i] > maxInArr) {
-            minInArr = arr[i];
+            maxInArr = arr[i];
         }
+    }
+    if (maxInArr == minInArr) {
+        return 0;
     }
     struct TempBuf{
         int maxInBuf;
@@ -668,7 +676,7 @@ int getMaxDistanceInArr(int arr[], int len)
     }
     // 将数组中每个值插入到对应的区间中，并更新区间的maxInBuf和minInBuf
     for (int i = 0; i < len; ++i) {
-        int index = (arr[i] - minInArr) * (len + 1) / (maxInArr - minInArr);
+        int index = (double)(arr[i] - minInArr) / (maxInArr - minInArr) * (len + 1);
         index = index == (len + 1) ? len : index;
         if (arr[i] < buf[index].minInBuf) {
             buf[index].minInBuf = arr[i];
@@ -699,5 +707,34 @@ int getMaxDistanceInArr(int arr[], int len)
     delete [] buf;
     return maxDistance;
 }
-
+/**
+ * @brief singleNumberOne 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+ * @param arr 数组
+ * @param len 长度
+ * @return 返回只出现一次的元素
+ */
+int singleNumberOne(int arr[], int len)
+{
+    int mask = 0;
+    for (int i = 0; i < len; ++i) {
+        mask ^= arr[i];
+    }
+    return mask;
+}
+/**
+ * @brief singleNumberTwo 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现了三次。找出那个只出现了一次的元素。
+ * @param arr 数组
+ * @param len 长度
+ * @return 返回只出现一次的元素
+ */
+int singleNumberTwo(int arr[], int len)
+{
+    int a = 0;
+    int b = 0;
+    for (int i = 0; i < len; ++i){
+        a = (a ^ arr[i]) & ~b;
+        b = (b ^ arr[i]) & ~a;
+    }
+    return a;
+}
 #endif // MYARITHMETIC_H
