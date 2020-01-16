@@ -40,6 +40,12 @@ int singleNumberOne(int arr[], int len);
 int singleNumberTwo(int arr[], int len);
 QVector<int> singleNumberThree(int arr[], int len);
 QVector<int> twoSum(int arr[], int len ,int target);
+struct ListNode {
+    int val;
+    ListNode *next;
+    ListNode(int x) : val(x), next(NULL) {}
+};
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -791,5 +797,42 @@ QVector<int> twoSum(int arr[], int len ,int target)
     }
     return result;
 }
-
+/**
+ * @brief addTwoNumbers 给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+                        如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+ * @param l1 链表1
+ * @param l2 链表2
+ * @return 返回和的链表
+ */
+ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        ListNode *temp1 = l1;
+        ListNode *temp2 = l2;
+        int a = 0;
+        ListNode *lastTemp = NULL;
+        ListNode *result = NULL;
+        // 延用链表1和链表2，减少内存的开销。
+        while(temp1 != NULL ||  temp2 != NULL) {
+            int b = temp1 != NULL ? temp1->val : 0;
+            int c = temp2 != NULL ? temp2->val : 0;
+            int sum = a + b + c;
+            a = sum / 10;
+            int d = sum % 10;
+            if (temp1 != NULL) {
+                temp1->val = d;
+                lastTemp = temp1;
+                result = l1;
+                temp1 = temp1->next;
+            }
+            if (temp2 != NULL) {
+                temp2->val = d;
+                lastTemp = temp2;
+                result = l2;
+                temp2 = temp2->next;
+            }
+        }
+        if (a == 1) {
+            lastTemp->next = new ListNode(a);
+        }
+        return result;
+    }
 #endif // MYARITHMETIC_H
