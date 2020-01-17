@@ -46,6 +46,7 @@ struct ListNode {
     ListNode(int x) : val(x), next(NULL) {}
 };
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2);
+int lengthOfLongestSubstring(QString str);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -805,34 +806,58 @@ QVector<int> twoSum(int arr[], int len ,int target)
  * @return 返回和的链表
  */
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        ListNode *temp1 = l1;
-        ListNode *temp2 = l2;
-        int a = 0;
-        ListNode *lastTemp = NULL;
-        ListNode *result = NULL;
-        // 延用链表1和链表2，减少内存的开销。
-        while(temp1 != NULL ||  temp2 != NULL) {
-            int b = temp1 != NULL ? temp1->val : 0;
-            int c = temp2 != NULL ? temp2->val : 0;
-            int sum = a + b + c;
-            a = sum / 10;
-            int d = sum % 10;
-            if (temp1 != NULL) {
-                temp1->val = d;
-                lastTemp = temp1;
-                result = l1;
-                temp1 = temp1->next;
-            }
-            if (temp2 != NULL) {
-                temp2->val = d;
-                lastTemp = temp2;
-                result = l2;
-                temp2 = temp2->next;
-            }
+    ListNode *temp1 = l1;
+    ListNode *temp2 = l2;
+    int a = 0;
+    ListNode *lastTemp = NULL;
+    ListNode *result = NULL;
+    // 延用链表1和链表2，减少内存的开销。
+    while(temp1 != NULL ||  temp2 != NULL) {
+        int b = temp1 != NULL ? temp1->val : 0;
+        int c = temp2 != NULL ? temp2->val : 0;
+        int sum = a + b + c;
+        a = sum / 10;
+        int d = sum % 10;
+        if (temp1 != NULL) {
+            temp1->val = d;
+            lastTemp = temp1;
+            result = l1;
+            temp1 = temp1->next;
         }
-        if (a == 1) {
-            lastTemp->next = new ListNode(a);
+        if (temp2 != NULL) {
+            temp2->val = d;
+            lastTemp = temp2;
+            result = l2;
+            temp2 = temp2->next;
         }
-        return result;
     }
+    if (a == 1) {
+        lastTemp->next = new ListNode(a);
+    }
+    return result;
+}
+/**
+ * @brief lengthOfLongestSubstring 无重复字符的最长子串
+ * @param str 字符串
+ * @return  最长子串的长度
+ */
+int lengthOfLongestSubstring(QString str)
+{
+    int len = str.size();
+    int start = 0;
+    int length = 0;
+    int result = 0;
+    QMap<int, int> arr;
+    for (int i = 0; i < len; ++i) {
+        int num = QString(str[i]).toLatin1().data()[0] & 0xff;
+        if (arr.find(num) != arr.end() && start <= arr[num]) {
+            start = arr[num] + 1;
+            length = i - start;
+        }
+        arr[num] = i;
+        length++;
+        result = result > length ? result : length;
+    }
+    return result;
+}
 #endif // MYARITHMETIC_H
