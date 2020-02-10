@@ -47,6 +47,7 @@ struct ListNode {
 };
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2);
 int lengthOfLongestSubstring(QString str);
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -859,5 +860,39 @@ int lengthOfLongestSubstring(QString str)
         result = result > length ? result : length;
     }
     return result;
+}
+/**
+ * @brief findMedianSortedArrays 寻找两个有序数组中的中位数
+ * @param nums1 有序数组1
+ * @param nums2 有序数组2
+ * @return 返回的中位数
+ */
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+    int len1 = nums1.size() - 1; // 数组1从后往前遍历的变量
+    int len2 = nums2.size() - 1; // 数组2从后向前遍历的变量
+    int i = 0; // 数组1从前向后遍历的变量
+    int j = 0; // 数组2从前向后遍历的变量
+    int minA = 0; // 记录计算中位数时两个值中的最小值
+    int maxA = 0; // 记录计算中位数时两个值中的最大值
+    // 思路：用minA记录两个数组中最小值，maxA记录两个数组中最大值；然后继续找第二最小值和第二最大值。。。
+    // 直到（i > len1 && j > len2），表示两个数组都遍历完了；当minA为数组1中的元素时i++，为数组2中的元素时j++；
+    // 当maxA为数组1中的元素时len1--；为数组2中的元素时len2--；最终中位数为minA和maxA的平均值。
+    while (i <= len1 || j <= len2) {
+        if (i <= len1 && j <= len2) {
+            minA = nums1[i] < nums2[j] ? nums1[i++] : nums2[j++];
+            maxA = nums1[len1] > nums2[len2] ? nums1[len1--] : nums2[len2--];
+        } else {
+            if (i <= len1) {
+                minA = nums1[i++];
+                maxA = nums1[len1--];
+            }
+            if (j <= len2) {
+                minA = nums2[j++];
+                maxA = nums2[len2--];
+            }
+        }
+    }
+    double res = (double)(minA + maxA) / 2;
+    return res;
 }
 #endif // MYARITHMETIC_H
