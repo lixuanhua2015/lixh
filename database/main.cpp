@@ -7,8 +7,9 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    QString arr("pwwkew");
-    RTU_DEBUG << lengthOfLongestSubstring(arr);
+    int i[5];
+    int *p = i;
+    RTU_DEBUG << p  << &p;
 
     return a.exec();
 }
