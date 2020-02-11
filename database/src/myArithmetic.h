@@ -48,6 +48,7 @@ struct ListNode {
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2);
 int lengthOfLongestSubstring(QString str);
 double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2);
+string longestPalindrome(string s);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -867,7 +868,8 @@ int lengthOfLongestSubstring(QString str)
  * @param nums2 有序数组2
  * @return 返回的中位数
  */
-double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2)
+{
     int len1 = nums1.size() - 1; // 数组1从后往前遍历的变量
     int len2 = nums2.size() - 1; // 数组2从后向前遍历的变量
     int i = 0; // 数组1从前向后遍历的变量
@@ -895,4 +897,46 @@ double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
     double res = (double)(minA + maxA) / 2;
     return res;
 }
+/**
+ * @brief getLen 获取回文子串的长度
+ * @param s 字符串
+ * @param l 左起点
+ * @param r 右起点
+ * @return 回文子串的长度
+ */
+int getLen(string s, int l, int r)
+{
+    int len = s.size();
+    while (l >= 0 && r < len && s[r] == s[l]) {
+        l--;
+        r++;
+    }
+    return r - l - 1;
+}
+/**
+ * @brief longestPalindrome 最长回文子串
+ * @param s 字符串
+ * @return 返回最长回文子串
+ */
+string longestPalindrome(string s)
+{
+    // 思路：回文中心的两侧互为镜像。因此，回文可以从他的中心展开，并且只有 2n-1 个
+    // 这样的中心（一个元素为中心的情况有 n 个，两个元素为中心的情况有 n-1 个）
+    int len = s.size();
+    string res = "";
+    int index = 0;
+    int first = 0;
+    for (int i = 0; i < len; ++i) {
+        int len1 = getLen(s, i, i);
+        int len2 = getLen(s, i, i + 1);
+        int maxLen = len1 > len2 ? len1 : len2;
+        if (maxLen > index) {
+            index = maxLen;
+            first = i - (maxLen - 1) / 2;
+        }
+    }
+    res = s.substr(first, index);
+    return res;
+}
+
 #endif // MYARITHMETIC_H
