@@ -7,9 +7,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 //    DatabaseManager myDb("mydatabase.db");
-    int i[5];
-    int *p = i;
-    RTU_DEBUG << p  << &p;
+    myAtoi("42");
 
     return a.exec();
 }

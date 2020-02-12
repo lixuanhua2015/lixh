@@ -47,8 +47,9 @@ struct ListNode {
 };
 ListNode* addTwoNumbers(ListNode* l1, ListNode* l2);
 int lengthOfLongestSubstring(QString str);
-double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2);
+double findMedianSortedArrays(QVector<int>& nums1, QVector<int>& nums2);
 string longestPalindrome(string s);
+int reverse(int x);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -868,7 +869,7 @@ int lengthOfLongestSubstring(QString str)
  * @param nums2 有序数组2
  * @return 返回的中位数
  */
-double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2)
+double findMedianSortedArrays(QVector<int>& nums1, QVector<int>& nums2)
 {
     int len1 = nums1.size() - 1; // 数组1从后往前遍历的变量
     int len2 = nums2.size() - 1; // 数组2从后向前遍历的变量
@@ -938,5 +939,59 @@ string longestPalindrome(string s)
     res = s.substr(first, index);
     return res;
 }
-
+/**
+ * @brief reverse 整数反转
+ * @param x 输入的整数
+ * @return 反转后的整数
+ */
+int reverse(int x)
+{
+    int maxInt = std::numeric_limits<int>::max();
+    int minInt = std::numeric_limits<int>::min();
+    long long res = 0;
+    while (x != 0) {
+        res = res * 10 + x % 10;
+        x = x / 10;
+    }
+    if (res > maxInt || res < minInt) {
+        res = 0;
+    }
+    return res;
+}
+int myAtoi(string str)
+{
+    int len = str.size();
+    long long res = 0;
+    bool flag = false;
+    int maxInt = std::numeric_limits<int>::max();
+    int minInt = std::numeric_limits<int>::min();
+    for (int i = 0; i < len; ++i) {
+        if (str[i] != ' ') {
+            while(true) {
+                if (str[i] == '-') {
+                    flag = true;
+                } else if (str[i] >= '0' && str[i] <= '9') {
+                    if (flag) {
+                        res = res * 10 - (str[i] - '0');
+                        if (res < minInt) {
+                            res = minInt;
+                            break;
+                        }
+                    } else {
+                        res = res * 10 + (str[i] - '0');
+                        if (res > maxInt) {
+                            res = maxInt;
+                            break;
+                        }
+                    }
+                } else {
+                    break;
+                }
+                i++;
+            }
+            break;
+        }
+    }
+    return res;
+}
 #endif // MYARITHMETIC_H
