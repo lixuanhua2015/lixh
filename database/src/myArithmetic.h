@@ -50,6 +50,7 @@ int lengthOfLongestSubstring(QString str);
 double findMedianSortedArrays(QVector<int>& nums1, QVector<int>& nums2);
 string longestPalindrome(string s);
 int reverse(int x);
+int maxArea(vector<int>& height);
 /**
  * @brief swapArr 字符交换位置
  * @param srcArr 字符位置1
@@ -993,5 +994,63 @@ int myAtoi(string str)
         }
     }
     return res;
+}
+/**
+ * @brief maxArea leetcode 11 盛最多水的容器
+ * @param height 数组
+ * @return 返回最大面积
+ */
+int maxArea(vector<int>& height)
+{
+    // 思路：用两个指针从两边向中间逼近，直到两个指针相交，每次取两者指向元素小的那一个作为桶高，
+    // 如果左边（k）小，计算出面积，然后向右依次遍历，直到找到比k角标上值大的，然后再继续后续操作
+    int begin =0;
+    int end = height.size() -1;
+    int max = 0;
+    int temp = 0;
+    int k = 0;
+    while (begin < end) {
+        max = max > temp ? max : temp;
+        if (height[begin] > height[end]) {
+            k = end;
+            temp = height[end] * (end - begin);
+            // 找到比height[k]大的值，并且end必须大于begin
+            do {
+                end--;
+            }while(height[end] <= height[k] && end > begin);
+        } else {
+            k = begin;
+            temp = height[begin] * (end - begin);
+            // 找到比height[k]大的值，并且end必须大于begin
+            do {
+                begin++;
+            }while(height[begin] <= height[k] && begin < end);
+        }
+    }
+    max = max > temp ? max : temp;
+    return max;
+}
+/**
+ * @brief intToRoman leetcode 12 整数（1-3999）转罗马数字
+ * @param num 整数
+ * @return 罗马数字
+ */
+string intToRoman(int num)
+{
+    // 直接按照每一位0~10的情况存进字符数组里，遍历四位就行了
+    // 这是一种投机的做法，如果数值很大时，在创建表的时候就很麻烦。
+    char* c[4][10] = {
+        {"","I","II","III","IV","V","VI","VII","VIII","IX"},
+        {"","X","XX","XXX","XL","L","LX","LXX","LXXX","XC"},
+        {"","C","CC","CCC","CD","D","DC","DCC","DCCC","CM"},
+        {"","M","MM","MMM"}
+    };
+    string roman;
+    roman.append(c[3][num / 1000]);
+    roman.append(c[2][num / 100 % 10]);
+    roman.append(c[1][num / 10 % 10]);
+    roman.append(c[0][num % 10]);
+
+    return roman;
 }
 #endif // MYARITHMETIC_H
