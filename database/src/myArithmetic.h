@@ -12,6 +12,7 @@
 #include <QList>
 #include <QVector>
 #include "parambase.h"
+#include <stack>
 void swapArr(char *srcArr, char *destArr);
 template<class T>
 void randomArr(T arr[], T maxValue, int len);
@@ -1053,4 +1054,24 @@ string intToRoman(int num)
 
     return roman;
 }
+/**
+ * @brief studyStack 学习stack栈，先进后出，例如汽车开入死胡同，先开入的汽车最后才能出来。FILO
+ */
+void studyStack()
+{
+    // 空栈
+    stack<int> intStack;
+    // intStack保存0-9十个数
+    for (int i = 0; i <= 10; ++i) {
+        intStack.push(i);
+    }
+    while (!intStack.empty()) {
+        // 获取栈最上面的值
+        int value = intStack.top();
+        RTU_DEBUG << value;
+        // 弹出栈顶部的值
+        intStack.pop();
+    }
+}
+
 #endif // MYARITHMETIC_H
